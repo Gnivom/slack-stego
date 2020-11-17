@@ -1,14 +1,14 @@
 # pip3 install slack_sdk
 
-import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-#SLACK_API_TOKEN = os.environ['SLACK_API_TOKEN']
-SLACK_API_TOKEN = os.environ['ALICE_API_TOKEN']
-assert(SLACK_API_TOKEN)
 
-client = WebClient(token=SLACK_API_TOKEN)
+client = None
+
+def setup(slack_api_token: str):
+    global client
+    client = WebClient(token = slack_api_token)
 
 def getChannelId(channel_name: str):
     try:
@@ -53,8 +53,9 @@ def getLastMessage(channel_id: str):
         assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
         print(f"Got an error: {e.response['error']}")
 
-channel_id = getChannelId('steganography-project')
-my_user = sendMessage(channel_id, "Test1234")
-user, text = getLastMessage(channel_id)
-print(user, text)
+#setup(os.environ['SLACK_API_TOKEN'])
+#channel_id = getChannelId('steganography-project')
+#my_user = sendMessage(channel_id, "Test1234")
+#user, text = getLastMessage(channel_id)
+#print(user, text)
 
