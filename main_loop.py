@@ -15,8 +15,7 @@ def run_loop(isAlice: bool):
     my_user = None # Will be filled later
 
     # Stego setup
-    seed = 1
-    stego.setup(seed)
+    stego.setup(open('settings.csv', 'r'))
     my_agent = 0
     other_agent = 0
     if isAlice:
@@ -26,6 +25,8 @@ def run_loop(isAlice: bool):
         other_agent = stego.create_agent(False)
         my_agent = stego.create_agent(True)
 
+    stego.post_secret(my_agent, b'This is the password')
+
     # Initial message
     if isAlice:
         text = stego.send_stegotext(my_agent)
@@ -33,7 +34,7 @@ def run_loop(isAlice: bool):
 
     should_stop = False
     while(not should_stop):
-        time.sleep(2.0)
+        time.sleep(5.0)
         last_user, last_message = slack_api.getLastMessage(channel_id)
         if last_user == my_user:
             continue
