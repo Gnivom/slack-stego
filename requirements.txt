@@ -1,0 +1,5 @@
+-- Copy from
+
+pip install PyQt5
+pip install slack_sdk
+

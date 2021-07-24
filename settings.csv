@@ -2,6 +2,6 @@ model_file,zoo:blender/blender_90M/model
 model,transformer/stego_generator
 no_cuda,true
 fp16_impl,mem_efficient
-topp,0.95
+topp,0.99
 context,i love home made ice cream
 seed,198347501
