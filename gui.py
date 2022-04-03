@@ -1,11 +1,12 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QLineEdit, QMessageBox, QLabel
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot, QThreadPool, QTimer, QRunnable
+from PyQt5.QtCore import pyqtSlot, QThreadPool, QTimer, QRunnable, QMutex
 
 from stego_slack_app import StegoSlackApp
 
 my_format = 'utf-8'
+mutex = QMutex()
 
 class SecretWindow:
     def __init__(self, parent, is_left: bool, is_sender: bool):
@@ -41,7 +42,9 @@ class SecretWindow:
         secret_message = self.textbox.text()
         self.textbox.setText("")
         self.add_secret(secret_message)
+        mutex.lock()
         self.parent.stego_app.post_secret(bytes(secret_message, my_format))
+        mutex.unlock()
 
 class UpdateWorker(QRunnable):
     def __init__(self, stego_app: StegoSlackApp, secret_window_receive: SecretWindow):
@@ -49,7 +52,9 @@ class UpdateWorker(QRunnable):
         self.stego_app = stego_app
         self.secret_window_receive = secret_window_receive
     def run(self):
+        mutex.lock()
         received_secret = self.stego_app.update()
+        mutex.unlock()
         if received_secret is not None:
             self.secret_window_receive.add_secret(str(received_secret, my_format))
 
@@ -78,7 +83,7 @@ class MyApp(QMainWindow):
 
         self.threadpool = QThreadPool()
         self.timer = QTimer()
-        self.timer.setInterval(10000)
+        self.timer.setInterval(2000)
         self.timer.timeout.connect(self.on_timer)
         self.timer.start()
 
@@ -86,7 +91,8 @@ class MyApp(QMainWindow):
 
     def on_timer(self):
         worker = UpdateWorker(self.stego_app, self.secret_window_receive)
-        self.threadpool.start(worker)
+        worker.run()
+        #self.threadpool.start(worker)
 
 if __name__ == '__main__':
     print(str(sys.argv))
