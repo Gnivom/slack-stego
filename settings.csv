@@ -3,5 +3,5 @@ model,transformer/stego_generator
 no_cuda,true
 fp16_impl,mem_efficient
 topp,0.99
-context,i love home made ice cream
-seed,198347501
+context,I need a favor. A long time a go I bought a new car but but now it's gone. Could you drive me home please?
+seed,128347501
